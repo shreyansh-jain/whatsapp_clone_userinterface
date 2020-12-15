@@ -2,27 +2,30 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 class CameraScreen extends StatefulWidget {
-  List<CameraDescription> cameras;
+  final List<CameraDescription> cameras;
+
   CameraScreen(this.cameras);
 
   @override
-  _CameraScreenState createState() => _CameraScreenState();
+  CameraScreenState createState() {
+    return new CameraScreenState();
+  }
 }
 
-class _CameraScreenState extends State<CameraScreen> {
+class CameraScreenState extends State<CameraScreen> {
   CameraController controller;
 
   @override
   void initState() {
     super.initState();
+    print(widget.cameras);
     controller =
         new CameraController(widget.cameras[0], ResolutionPreset.medium);
     controller.initialize().then((_) {
       if (!mounted) {
         return;
-      } else {
-        setState(() {});
       }
+      setState(() {});
     });
   }
 
@@ -34,13 +37,32 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (controller.value.isInitialized) {
-      return Container();
-    } else {
-      return new AspectRatio(
-        aspectRatio: controller.value.aspectRatio,
-        child: CameraPreview(controller),
-      );
-    }
+    return (!controller.value.isInitialized) ? new Container() : new AspectRatio(aspectRatio: controller.value.aspectRatio,child: new CameraPreview(controller));
+    // if (!controller.value.isInitialized) {
+    //   return new Container();
+    // }
+    // return new AspectRatio(
+    //   aspectRatio: controller.value.aspectRatio,
+    //   child: new CameraPreview(controller),
+    // );
+  }
+
+  Widget buildCameraView() {
+    return new Container(
+      child: new Row(
+        children: [
+          new Expanded(
+            child: new Column(
+              children: <Widget>[
+                new AspectRatio(
+                  aspectRatio: controller.value.aspectRatio,
+                  child: new CameraPreview(controller),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
